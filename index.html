@@ -1,0 +1,233 @@
+<!doctype html>
+<html lang="ru"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>HONEYCOMB LAB</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cpath d='M16 2l12 7v14l-12 7-12-7V9z' fill='%23F47732'/%3E%3C/svg%3E">
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;800&family=Golos+Text:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{--g:#17191B;--o:#F47732;--s:#B8C0C5;--w:#F2F0EA;--st:#626A70;--line:rgba(184,192,197,.2);--d:'Unbounded','Arial Black',system-ui,sans-serif;--m:ui-monospace,'JetBrains Mono',Menlo,monospace;color-scheme:dark;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){color-scheme:dark}}
+:root[data-theme="dark"]{color-scheme:dark}
+html{scroll-padding-top:calc(env(safe-area-inset-top,0px) + 56px);scroll-behavior:smooth}
+*{box-sizing:border-box;margin:0}
+body{background:var(--g);color:var(--w);font:400 16px/1.55 'Golos Text',system-ui,sans-serif;overflow-x:hidden}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);background:var(--g);z-index:30}
+:focus-visible{outline:2px solid var(--o);outline-offset:3px}
+header{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;display:flex;align-items:center;justify-content:space-between;padding:10px clamp(16px,4vw,48px);background:rgba(23,25,27,.92);border-bottom:1px solid var(--line)}
+.logo{display:flex;align-items:center;gap:10px;font:800 15px var(--d);letter-spacing:.04em;color:var(--w);text-decoration:none}
+nav a{color:var(--s);text-decoration:none;margin-left:24px;font-size:14px}nav a:hover{color:var(--o)}
+.tag{font:12px var(--m);color:var(--st);display:flex;gap:10px;align-items:center}
+.tag::before{content:"";width:22px;height:1px;background:var(--o)}
+.hero{position:relative;min-height:calc(100svh - 56px);display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,1fr);align-items:center;gap:20px;padding:40px clamp(16px,4vw,48px) 56px;background:linear-gradient(var(--line) 1px,transparent 1px) 0 0/56px 56px,linear-gradient(90deg,var(--line) 1px,transparent 1px) 0 0/56px 56px}
+.hero::after{content:"";position:absolute;inset:0;background:radial-gradient(ellipse at 70% 50%,transparent 30%,var(--g) 85%);pointer-events:none}
+.hero>*{position:relative;z-index:1}
+h1{font:800 clamp(40px,8.6vw,122px)/.9 var(--d);letter-spacing:-.03em;margin:18px 0 26px}
+h1 span{display:block;margin-left:clamp(24px,6vw,96px);color:transparent;-webkit-text-stroke:2px var(--s)}
+.lead{max-width:46ch;color:var(--s);font-size:18px}
+.go{display:inline-block;margin-top:30px;padding:16px 28px;background:var(--o);color:var(--g);font:600 15px var(--d);text-decoration:none;clip-path:polygon(14px 0,100% 0,100% calc(100% - 14px),calc(100% - 14px) 100%,0 100%,0 14px);transition:transform .2s}
+.go:hover{transform:translateX(6px)}
+.read{display:flex;gap:28px;margin-top:36px;font:12px var(--m);color:var(--st)}.read b{display:block;color:var(--w);font:500 22px var(--d)}
+.stage{position:relative;aspect-ratio:1/1;max-height:76vh;width:100%;border:1px solid var(--line)}
+.stage canvas{width:100%;height:100%;display:block;cursor:grab;touch-action:pan-y}
+.stage::before,.stage::after{content:"";position:absolute;width:18px;height:18px;border:2px solid var(--o)}
+.stage::before{top:-1px;left:-1px;border-right:0;border-bottom:0}.stage::after{right:-1px;bottom:-1px;border-left:0;border-top:0}
+.scan{position:absolute;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--o),transparent);animation:sc 5s linear infinite;pointer-events:none}
+@keyframes sc{from{top:0;opacity:0}10%,90%{opacity:.8}to{top:100%;opacity:0}}
+.ruler{position:absolute;left:0;right:0;bottom:-30px;font:11px var(--m);color:var(--st);display:flex;justify-content:space-between}
+.ruler::before{content:"";position:absolute;left:0;right:0;top:-8px;height:6px;background:repeating-linear-gradient(90deg,var(--st) 0 1px,transparent 1px 10%)}
+.led{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--o);margin-right:6px;animation:bl 1.4s steps(2) infinite}@keyframes bl{50%{opacity:.2}}
+.hud{position:absolute;top:10px;left:12px;font:11px/1.5 var(--m);color:var(--s);pointer-events:none}
+.sep{display:block;width:100%;height:42px;color:var(--st)}
+section.lab,section.out{padding:56px clamp(16px,4vw,48px)}
+h2{font:800 clamp(26px,4vw,46px)/1.05 var(--d);letter-spacing:-.02em;margin:12px 0 30px;max-width:20ch}
+.bench{display:grid;grid-template-columns:270px minmax(0,1fr) 330px;border:1px solid var(--line);background:#1d2023}
+.bench>*{padding:20px}.par{border-right:1px solid var(--line);display:grid;gap:22px;align-content:start}
+.res{border-left:1px solid var(--line);display:grid;gap:18px;align-content:start}
+.par h3,.res h3{font:600 13px var(--d);display:flex;align-items:center;gap:8px;margin-bottom:10px}
+.par svg.i{width:20px;height:20px;stroke:var(--o);fill:none;stroke-width:1.6}
+.seg{display:flex;flex-wrap:wrap;gap:6px}
+.seg button{border:0;background:rgba(184,192,197,.12);color:var(--s);padding:8px 11px;font:13px var(--m);cursor:pointer;clip-path:polygon(7px 0,100% 0,100% calc(100% - 7px),calc(100% - 7px) 100%,0 100%,0 7px);transition:background .2s,color .2s}
+.seg button:hover{background:rgba(244,119,50,.28)}.seg button[aria-pressed=true]{background:var(--o);color:var(--g)}
+input[type=range]{width:100%;accent-color:var(--o)}.val{font:13px var(--m);color:var(--s);display:flex;justify-content:space-between}
+.view{position:relative;min-height:440px;padding:0;background:radial-gradient(circle at 50% 45%,#2a2e32,#1a1c1e 70%)}
+.view canvas{position:absolute;inset:0;width:100%;height:100%;cursor:grab;touch-action:pan-y}
+.view .hud{top:14px;left:16px}
+.gz{position:absolute;left:14px;bottom:14px;width:64px;height:64px}
+.leg{position:absolute;right:14px;bottom:14px;font:11px var(--m);color:var(--s);text-align:right}.leg i{display:block;width:120px;height:6px;margin-bottom:4px;background:linear-gradient(90deg,var(--s),var(--o))}
+.big{font:800 clamp(34px,4vw,48px)/1 var(--d)}.big small{font:12px var(--m);color:var(--s);display:block;margin-top:6px}
+.dl{font:13px var(--m);color:var(--s);display:grid;gap:3px}.dl b{color:var(--o);font-weight:500}
+.bar{display:grid;grid-template-columns:34px 1fr 52px;gap:8px;align-items:center;font:12px var(--m);color:var(--s);margin:7px 0}
+.bar i{display:block;height:8px;background:rgba(184,192,197,.14)}.bar i u{display:block;height:100%;background:var(--s);transition:width .5s}
+.bar.on{color:var(--o)}.bar.on i u{background:var(--o)}
+#ch path.c{fill:none;stroke:var(--o);stroke-width:2;stroke-dasharray:1;stroke-dashoffset:0;animation:dr .9s ease-out}@keyframes dr{from{stroke-dashoffset:1}}
+#ch text{font:9px var(--m);fill:var(--st)}
+.note{font-size:12.5px;color:var(--st);line-height:1.5;margin-top:22px;max-width:80ch}
+.out{display:grid;grid-template-columns:repeat(12,1fr);gap:0 24px}
+.out h2,.out .tag{grid-column:1/-1}
+.k{border-top:1px solid var(--line);padding-top:14px;margin-bottom:34px}
+.k b{display:block;font:800 clamp(46px,8vw,104px)/.95 var(--d);letter-spacing:-.04em}
+.k:nth-of-type(1){grid-column:1/7}.k:nth-of-type(2){grid-column:7/13;margin-top:70px}.k:nth-of-type(3){grid-column:3/9}
+.k p{max-width:34ch;color:var(--s)}
+.sum{grid-column:9/13;align-self:center;color:var(--s);font-size:15px}.sum li{margin:0 0 12px 16px}
+footer{padding:28px clamp(16px,4vw,48px);border-top:1px solid var(--line);font:12px var(--m);color:var(--st)}
+.pg:not(.on){display:none}header{flex-wrap:wrap;gap:6px 16px}nav a[aria-current]{color:var(--o);box-shadow:0 2px 0 var(--o)}nav a{padding:6px 0}
+.tz{display:grid;grid-template-columns:repeat(3,1fr)}.tz a{padding:30px clamp(16px,4vw,48px);border-top:1px solid var(--line);border-left:1px solid var(--line);color:var(--w);text-decoration:none}.tz b{display:block;font:800 22px var(--d);margin-bottom:6px}.tz span{color:var(--s)}.tz a:hover b{color:var(--o)}
+.ab{padding:56px clamp(16px,4vw,48px)}.abg{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:34px 28px;margin-bottom:40px}.abg>div{border-top:1px solid var(--line);padding-top:14px;color:var(--s)}.abg h3{font:600 14px var(--d);color:var(--w);margin-bottom:10px}.abg li{margin:0 0 7px 16px}.abg p{max-width:46ch}
+table{border-collapse:collapse;width:100%;max-width:520px;color:var(--s)}td,th{text-align:left;padding:9px 12px;border-bottom:1px solid var(--line)}th{color:var(--o);font:600 12px var(--m)}
+@media(max-width:1000px){.hero{grid-template-columns:1fr}.bench{grid-template-columns:1fr}.par,.res{border:0}.view{min-height:360px}.k:nth-of-type(n),.sum{grid-column:1/-1;margin-top:0}nav a{margin-left:14px;font-size:13px}.tz{grid-template-columns:1fr}.stage{max-height:none}}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style></head><body>
+<header><a class="logo" href="#home"><svg width="30" height="30" viewBox="0 0 32 32"><path d="M16 2l12 7v14l-12 7-12-7V9z" fill="none" stroke="#F47732" stroke-width="2"/><path d="M16 9l6 3.5v7L16 23l-6-3.5v-7z" fill="#B8C0C5"/></svg>HONEYCOMB LAB</a><nav><a href="#home">Главная</a><a href="#lab">Лаборатория</a><a href="#results">Результаты</a><a href="#about">О проекте</a></nav></header>
+
+<main id="top">
+<section class="hero pg" data-v="home">
+ <div>
+  <div class="tag">Алюминиевая сотовая панель 100 × 100 мм</div>
+  <h1>HONEY<br>COMB<span>LAB</span></h1>
+  <p class="lead">Сколько материала нужно жёсткой панели? Меняйте толщину стенок, пористость, направление нагрузки и трещины — и смотрите, как меняется модуль Юнга.</p>
+  <a class="go" href="#lab">Начать исследование</a>
+  <div class="read"><div><b id="hp">0,614</b>пористость</div><div><b id="ht">3,5</b>стенка, мм</div><div><span class="led"></span>конечные элементы</div></div>
+ </div>
+ <div class="stage"><canvas id="c1" aria-label="Вращаемая 3D-модель алюминиевой соты"></canvas><div class="scan"></div><div class="hud">X 000.0 / Y 000.0 / Z 016.0 мм<br>тяните, чтобы повернуть</div><div class="ruler"><span>0</span><span>25</span><span>50</span><span>75</span><span>100 мм</span></div></div>
+</section>
+<svg class="sep pg" data-v="home" aria-hidden="true"><defs><pattern id="hx" width="48.5" height="84" patternUnits="userSpaceOnUse"><path d="M24.25 0l24.25 14v28l-24.25 14-24.25-14V14zM0 56l24.25 14v28M48.5 56l-24.25 14" fill="none" stroke="currentColor" stroke-width="1"/><path d="M24.25 8l17 10v20l-17 10-17-10V18z" fill="#F47732" opacity=".85" transform="translate(0 0) scale(.5) translate(24 24)"/></pattern></defs><rect width="100%" height="100%" fill="url(#hx)"/></svg>
+
+<section class="tz pg" data-v="home"><a href="#lab"><b>Лаборатория</b><span>Соберите панель и измерьте модуль Юнга.</span></a><a href="#results"><b>Результаты</b><span>Что показал расчёт: толщина, пористость, трещины.</span></a><a href="#about"><b>О проекте</b><span>Цель, методика и свойства алюминия.</span></a></section>
+
+<section class="lab pg" data-v="lab">
+ <div class="tag">Инженерная станция</div>
+ <h2>Соберите панель и найдите её жёсткость</h2>
+ <div class="bench">
+  <div class="par">
+   <div><h3><svg class="i" viewBox="0 0 20 20"><path d="M4 3v14M10 3v14M2 10h2M10 10h2"/></svg>Толщина стенок</h3><input id="rt" type="range" min="2" max="6" step=".1" value="3.5" aria-label="Толщина стенок"><div class="val"><span>2 мм</span><span id="vt">3,5 мм</span><span>6 мм</span></div></div>
+   <div><h3><svg class="i" viewBox="0 0 20 20"><path d="M10 2l7 4v8l-7 4-7-4V6z"/></svg>Пористость</h3><div class="seg" id="sp"></div></div>
+   <div><h3><svg class="i" viewBox="0 0 20 20"><path d="M3 10h13M12 6l4 4-4 4"/></svg>Направление нагрузки</h3><div class="seg" id="sd"></div></div>
+   <div><h3><svg class="i" viewBox="0 0 20 20"><path d="M2 12l4-5 3 6 3-7 3 5 3-3"/></svg>Положение трещины</h3><div class="seg" id="sc"></div></div>
+  </div>
+  <div class="view"><canvas id="c2" aria-label="3D-модель панели с выбранными параметрами"></canvas><div class="hud" id="hud"></div>
+   <svg class="gz" viewBox="0 0 64 64" fill="none" stroke-width="2"><path d="M12 52h40" stroke="#F47732"/><path d="M12 52V12" stroke="#B8C0C5"/><path d="M12 52l22-16" stroke="#F2F0EA"/><text x="54" y="47" fill="#F47732" stroke="none" font-size="9">X</text><text x="6" y="10" fill="#B8C0C5" stroke="none" font-size="9">Y</text><text x="36" y="34" fill="#F2F0EA" stroke="none" font-size="9">Z</text></svg>
+   <div class="leg"><i></i>напряжение: ниже — выше</div></div>
+  <div class="res">
+   <div><h3>Модуль Юнга E</h3><div class="big"><span id="E">6,2</span><small>×10¹⁰ Па</small></div></div>
+   <div class="dl" id="dl"></div>
+   <div><h3>Три направления нагрузки</h3><div id="bars"></div></div>
+   <div><h3>E от толщины стенки</h3><svg id="ch" viewBox="0 0 300 140" width="100%" role="img" aria-label="График модуля Юнга от толщины"></svg></div>
+  </div>
+ </div>
+ <p class="note">Кривые восстановлены по значениям и трендам из результатов исследования (толщина 2–6 мм, пористость 0,37–0,81, нагрузка вдоль −z, −x, +x). Промежуточные точки пористости (0,45 и 0,70) и величины для трещин — оценка по описанию, а не сырые данные расчёта.</p>
+</section>
+
+<section class="out pg" data-v="results">
+ <div class="tag">Что показал расчёт</div>
+ <h2>Пустота не всегда делает панель слабее</h2>
+ <div class="k"><b>+21 %</b><p>к модулю Юнга при пористости 0,614 по сравнению с 0,53 при нагрузке вдоль −z.</p></div>
+ <div class="k"><b>≈ 3×</b><p>выше жёсткость при нагрузке вдоль −x, чем вдоль −z и +x.</p></div>
+ <div class="k"><b>3,5 мм</b><p>толщина, после которой рост жёсткости замедляется.</p></div>
+ <ul class="sum"><li>Правило «чем толще, тем жёстче» работает не всегда.</li><li>Нижние трещины снижают жёсткость сильнее остальных.</li><li>Следующий шаг — проверка на реальных образцах.</li></ul>
+</section>
+
+<section class="ab pg" data-v="about">
+ <div class="tag">О проекте</div>
+ <h2>Как мы изучали алюминиевые соты</h2>
+ <div class="abg">
+  <div><h3>Цель</h3><p>Выяснить, как толщина, пористость и направление нагрузки влияют на модуль Юнга алюминиевой сотовой панели, и оценить роль трещин.</p></div>
+  <div><h3>Задачи</h3><ul><li>изучить сведения о сотовых конструкциях;</li><li>построить 3D-модель панели 100 × 100 мм;</li><li>выполнить расчёт при растущей нагрузке;</li><li>найти модуль Юнга по линейному участку кривой «напряжение – деформация»;</li><li>сравнить толщины, пористости и направления нагрузки;</li><li>исследовать влияние положения трещины.</li></ul></div>
+  <div><h3>Методика</h3><ul><li>3D-модель сотовой панели</li><li>расчёт методом конечных элементов при растущей нагрузке</li><li>обработка данных в Python: график «напряжение – деформация»</li><li>модуль Юнга — наклон линейного участка кривой</li></ul></div>
+  <div><h3>Гипотеза</h3><p>При правильном выборе геометрических параметров можно получить достаточно жёсткую панель при меньшем количестве материала.</p></div>
+  <div><h3>Практическое значение</h3><ul><li>лёгкие и жёсткие панели для авиации и робототехники;</li><li>подбор геометрии без лишнего расхода материала;</li><li>предварительное проектирование до дорогих испытаний.</li></ul></div>
+  <div><h3>Перспективы</h3><ul><li>изготовить реальные образцы;</li><li>сравнить лабораторные испытания с расчётом;</li><li>учесть способ изготовления и соединение слоёв.</li></ul></div>
+ </div>
+ <table><tr><th>Свойство алюминия</th><th>Значение</th></tr><tr><td>Плотность ρ</td><td>2700 кг/м³</td></tr><tr><td>Модуль Юнга E</td><td>6,91·10¹⁰ Па</td></tr><tr><td>Коэффициент Пуассона</td><td>0,331</td></tr><tr><td>Начальный предел текучести</td><td>173 МПа</td></tr></table>
+</section>
+</main>
+<footer>HONEYCOMB LAB · исследование алюминиевых сотовых конструкций · Al: ρ 2700 кг/м³, E 6,91·10¹⁰ Па, ν 0,331</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+const $=s=>document.querySelector(s),RM=matchMedia('(prefers-reduced-motion:reduce)').matches;
+const L=(P,x)=>{if(x<=P[0][0])return P[0][1];for(let i=1;i<P.length;i++)if(x<=P[i][0]){const[a,b]=P[i-1],[c,d]=P[i];return b+(d-b)*(x-a)/(c-a)}return P[P.length-1][1]};
+const T={'-z':[[2,5.5],[2.5,5.9],[3,5.95],[3.4,5.98],[3.5,6.2],[4,6.15],[5,6.4],[6,6.7]],
+'-x':[[2,19.6],[2.1,21.2],[2.3,17.9],[3,18.5],[4,19.2],[4.4,21.4],[4.7,19.5],[5,20.7],[5.3,18.2],[6,17.7]],
+'+x':[[2,6.6],[2.5,5.3],[3,6.5],[3.5,5.5],[4,6.3],[5,6.5],[5.5,5.8],[6,6.5]]};
+const PH={'-z':[[.37,5.3],[.45,5.2],[.53,5.3],[.614,6.4],[.7,6.6],[.81,6.5]].map(([a,b])=>[a,b/6.4]),
+'-x':[[.37,1],[.7,1],[.81,.9]],'+x':[[.37,.93],[.53,.95],[.614,1],[.7,.95],[.81,.88]]};
+const CR={none:1,mid:.99,right:.98,bot:.86,br:.89};
+const E=(d,t,p,c)=>L(T[d],t)*L(PH[d],p)*CR[c];
+const f1=x=>x.toLocaleString('ru-RU',{minimumFractionDigits:1,maximumFractionDigits:1});
+const SL={mid:[-28,28,-3,3],right:[22,50,-3,3],bot:[-26,26,-46,-38],br:[20,50,-46,-38]};
+const slit=(x,y,c,m)=>{const s=SL[c];return s&&x>s[0]-m&&x<s[1]+m&&y>s[2]-m&&y<s[3]+m};
+const SIL=new THREE.Color(0xB8C0C5),ORG=new THREE.Color(0xF47732),HOT=new THREE.Color(0xFF5A1F);
+
+function Scene(cv){
+ const R=new THREE.WebGLRenderer({canvas:cv,antialias:true,alpha:true});R.setPixelRatio(Math.min(devicePixelRatio,2));
+ const sc=new THREE.Scene(),cam=new THREE.PerspectiveCamera(32,1,1,1000);cam.position.set(0,-50,250);cam.lookAt(0,0,0);
+ sc.add(new THREE.HemisphereLight(0xffffff,0x3a4046,1.2));
+ const dl=new THREE.DirectionalLight(0xfff0dc,1.3);dl.position.set(80,120,160);sc.add(dl);
+ const pl=new THREE.PointLight(0xF47732,1.5,420);pl.position.set(-100,-40,100);sc.add(pl);
+ const g=new THREE.Group(),mat=new THREE.MeshStandardMaterial({metalness:.55,roughness:.38});sc.add(g);
+ const ax=new THREE.LineSegments(new THREE.BufferGeometry().setFromPoints([[-62,-62,0],[-38,-62,0],[-62,-62,0],[-62,-38,0],[-62,-62,0],[-62,-62,24]].map(a=>new THREE.Vector3(...a))),new THREE.LineBasicMaterial({color:0xF47732}));g.add(ax);
+ let mesh,arrow,cells=[],P,age=0,ry=.55,rx=-.4,drag=false,lx=0,ly=0,vis=true,tm=1;
+ const D=new THREE.Object3D(),c=new THREE.Color();
+ const o={build(q){P=q;age=0;if(mesh){g.remove(mesh);mesh.geometry.dispose()}if(arrow)g.remove(arrow);
+  const p=Math.min(60,Math.max(9,1.1547*q.t/(1-q.phi))),Rr=p/Math.sqrt(3),seen=new Set();cells=[];
+  const n=Math.ceil(70/(p*.866))+1,m=Math.ceil(70/p)+1;
+  for(let j=-n;j<=n;j++)for(let i=-m;i<=m;i++){const cx=(i+(j&1?.5:0))*p,cy=j*p*.866;
+   for(let k=0;k<6;k++){const th=k*Math.PI/3,x=cx+Math.cos(th)*p/2,y=cy+Math.sin(th)*p/2;
+    if(Math.abs(x)>50||Math.abs(y)>50||slit(x,y,q.crack,0))continue;
+    const key=Math.round(x*10)+','+Math.round(y*10);if(seen.has(key))continue;seen.add(key);
+    cells.push({x,y,r:th+Math.PI/2,hot:q.crack!=='none'&&slit(x,y,q.crack,p*.8)})}}
+  mesh=new THREE.InstancedMesh(new THREE.BoxGeometry(Rr+q.t*.9,q.t,16),mat,cells.length);
+  cells.forEach((e,k)=>{D.position.set(e.x,e.y,0);D.rotation.set(0,0,e.r);D.updateMatrix();mesh.setMatrixAt(k,D.matrix);mesh.setColorAt(k,SIL)});
+  g.add(mesh);
+  const v={'-z':[0,0,-1],'-x':[-1,0,0],'+x':[1,0,0]}[q.dir],dv=new THREE.Vector3(...v);
+  arrow=new THREE.ArrowHelper(dv,dv.clone().multiplyScalar(-55).add(new THREE.Vector3(0,0,q.dir==='-z'?8:0)),42,0xF47732,12,8);g.add(arrow);arrow.userData.v=dv;
+  o.info={p,n:cells.length}},
+  draw(t){if(!vis||!mesh)return;age+=.016;if(!drag&&!RM)ry+=.004;
+   const e=1-Math.pow(1-Math.min(1,age/.9),3);g.scale.setScalar(.72+.28*e);g.rotation.set(rx,ry,0);
+   const th=RM?1:t/1000;
+   cells.forEach((e2,k)=>{let s=P.dir==='-z'?.5+.5*Math.sin(Math.hypot(e2.x,e2.y)*.12-th*3):.5+.5*Math.sin(e2.x*.09+(P.dir==='-x'?1:-1)*th*3);
+    c.copy(SIL).lerp(ORG,s*.55);if(e2.hot)c.lerp(HOT,.8);mesh.setColorAt(k,c)});mesh.instanceColor.needsUpdate=true;
+   if(arrow)arrow.position.addScaledVector(arrow.userData.v,Math.sin(th*4)*.12);
+   R.render(sc,cam)}};
+ cv.addEventListener('pointerdown',e=>{drag=true;lx=e.clientX;ly=e.clientY;cv.setPointerCapture(e.pointerId);cv.style.cursor='grabbing'});
+ cv.addEventListener('pointermove',e=>{if(!drag)return;ry+=(e.clientX-lx)*.01;rx=Math.max(-1.2,Math.min(.6,rx+(e.clientY-ly)*.01));lx=e.clientX;ly=e.clientY});
+ ['pointerup','pointercancel'].forEach(n=>cv.addEventListener(n,()=>{drag=false;cv.style.cursor='grab'}));
+ new ResizeObserver(()=>{const b=cv.getBoundingClientRect();if(!b.width)return;R.setSize(b.width,b.height,false);cam.aspect=b.width/b.height;cam.updateProjectionMatrix()}).observe(cv);
+ new IntersectionObserver(a=>vis=a[0].isIntersecting).observe(cv);
+ return o}
+
+const S={t:3.5,phi:.614,dir:'-z',crack:'none'};let hero,lab;
+try{hero=Scene($('#c1'));lab=Scene($('#c2'))}catch(e){document.querySelectorAll('canvas').forEach(c=>c.replaceWith('Для 3D-модели нужен WebGL.'))}
+if(hero){hero.build({...S});lab.build(S);const t0=performance.now();(function f(t){hero.draw(t);lab.draw(t);requestAnimationFrame(f)})(0);
+ if(!RM){const ph=[.37,.45,.53,.614,.7,.81];let i=3;setInterval(()=>{i=(i+1)%6;hero.build({t:[3.5,2.5,4.5,3.5,5,3][i],phi:ph[i],dir:'-z',crack:'none'});$('#hp').textContent=String(ph[i]).replace('.',',');$('#ht').textContent=f1([3.5,2.5,4.5,3.5,5,3][i])},5200)}}
+
+const mk=(id,arr,key,fmt)=>{const el=$(id);arr.forEach(v=>{const b=document.createElement('button');b.textContent=fmt(v);b.setAttribute('aria-pressed',S[key]==v);b.onclick=()=>{S[key]=v;[...el.children].forEach(x=>x.setAttribute('aria-pressed',x===b));upd(true)};el.append(b)})};
+mk('#sp',[.37,.45,.53,.614,.7,.81],'phi',v=>String(v).replace('.',','));
+mk('#sd',['-z','-x','+x'],'dir',v=>v.replace('-','−'));
+const CN={none:'Нет',mid:'Середина',right:'Справа',bot:'Снизу',br:'Снизу справа'};
+{const el=$('#sc');Object.keys(CN).forEach(k=>{const b=document.createElement('button');b.textContent=CN[k];b.setAttribute('aria-pressed',k==='none');b.onclick=()=>{S.crack=k;[...el.children].forEach(x=>x.setAttribute('aria-pressed',x===b));upd(true)};el.append(b)})}
+$('#rt').oninput=e=>{S.t=+e.target.value;upd(true)};
+let shown=6.2;
+function upd(rebuild){
+ const e=E(S.dir,S.t,S.phi,S.crack),e53=E(S.dir,S.t,.53,S.crack),e0=E(S.dir,S.t,S.phi,'none');
+ const a=shown,b=e,t0=performance.now();(function tw(n){const k=Math.min(1,(n-t0)/350);$('#E').textContent=f1(a+(b-a)*k);if(k<1)requestAnimationFrame(tw)})(t0);shown=e;
+ $('#vt').textContent=f1(S.t)+' мм';
+ const sg=x=>(x>=0?'+':'−')+Math.abs(Math.round(x*100))+' %';
+ $('#dl').innerHTML=`<span>к пористости 0,53: <b>${sg(e/e53-1)}</b></span><span>трещина: <b>${S.crack==='none'?'нет':sg(e/e0-1)}</b></span>`;
+ $('#bars').innerHTML=['-z','-x','+x'].map(d=>{const v=E(d,S.t,S.phi,S.crack);return`<div class="bar${d===S.dir?' on':''}"><span>${d.replace('-','−')}</span><i><u style="width:${v/22*100}%"></u></i><span>${f1(v)}</span></div>`}).join('');
+ const pts=[];for(let t=2;t<=6.001;t+=.1)pts.push([t,E(S.dir,t,S.phi,S.crack)]);
+ const ys=pts.map(p=>p[1]),lo=Math.min(...ys)-.4,hi=Math.max(...ys)+.4,X=t=>30+(t-2)/4*260,Y=v=>120-(v-lo)/(hi-lo)*105;
+ $('#ch').innerHTML=`<path d="M30 10V120H290" fill="none" stroke="#626A70"/><path class="c" pathLength="1" d="${pts.map((p,i)=>(i?'L':'M')+X(p[0]).toFixed(1)+' '+Y(p[1]).toFixed(1)).join('')}"/><line x1="${X(S.t)}" x2="${X(S.t)}" y1="10" y2="120" stroke="#B8C0C5" stroke-dasharray="3 3"/><circle cx="${X(S.t)}" cy="${Y(e)}" r="4.5" fill="#F47732"/>${[2,3,4,5,6].map(t=>`<text x="${X(t)-3}" y="134">${t}</text>`).join('')}<text x="2" y="14">${f1(hi)}</text><text x="2" y="120">${f1(lo)}</text>`;
+ if(rebuild&&lab)lab.build(S);
+ const i=lab&&lab.info||{p:0,n:0};
+ $('#hud').innerHTML=`t = ${f1(S.t)} мм · пористость ${String(S.phi).replace('.',',')}<br>шаг ячейки ≈ ${f1(Math.min(60,Math.max(9,1.1547*S.t/(1-S.phi))))} мм · нагрузка ${S.dir.replace('-','−')}<br><span class="led"></span>${CN[S.crack]==='Нет'?'без трещин':'трещина: '+CN[S.crack].toLowerCase()}`;
+}
+upd(false);
+const V={home:'HONEYCOMB LAB',lab:'Лаборатория · HONEYCOMB LAB',results:'Результаты · HONEYCOMB LAB',about:'О проекте · HONEYCOMB LAB'};
+function route(){let v=location.hash.slice(1);if(!V[v])v='home';
+ document.querySelectorAll('.pg').forEach(el=>el.classList.toggle('on',el.dataset.v===v));
+ document.querySelectorAll('nav a').forEach(a=>a.getAttribute('href')==='#'+v?a.setAttribute('aria-current','page'):a.removeAttribute('aria-current'));
+ document.title=V[v];scrollTo(0,0)}
+addEventListener('hashchange',route);route();
+</script>
+</body></html>
